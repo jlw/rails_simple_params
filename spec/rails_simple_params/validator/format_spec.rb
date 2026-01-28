@@ -23,6 +23,12 @@ describe RailsSimpleParams::Validator::Format do
       it_behaves_like 'does not raise error'
     end
 
+    context 'value given is an empty string (i.e. GET param)' do
+      let(:value) { '' }
+
+      it_behaves_like 'does not raise error'
+    end
+
     context 'value given is invalid' do
       let(:value)         { '50' }
       let(:error_message) { "foo must match format #{format_validation}" }

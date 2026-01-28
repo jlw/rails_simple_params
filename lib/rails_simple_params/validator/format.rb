@@ -31,7 +31,7 @@ module RailsSimpleParams
       end
 
       def string_in_format?
-        value.is_a?(String) && value =~ options[:format]
+        value.is_a?(String) && (value == '' || value =~ options[:format])
       end
     end
   end

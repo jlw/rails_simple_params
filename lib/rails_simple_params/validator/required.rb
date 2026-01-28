@@ -6,7 +6,12 @@ module RailsSimpleParams
       private
 
       def valid_value?
-        !(value.nil? && options[:required])
+        return true unless options[:required]
+        return false if value.nil?
+        return false if value == ''
+        return false if value.is_a?(Enumerable) && value.size.zero?
+
+        true
       end
 
       def error_message
