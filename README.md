@@ -1,4 +1,5 @@
 # rails_simple_params
+
 _Parameter Validation & Type Coercion for Rails_
 
 ## Introduction
@@ -177,7 +178,7 @@ param! :books_array, Array, required: true  do |b|
 end
 ```
 
-## Many thanks to:
+## Many thanks to
 
 - [Nicolas Blanco](http://twitter.com/nblanco_fr)
 - [Mattt Thompson](https://twitter.com/mattt)

@@ -9,7 +9,7 @@ module RailsSimpleParams
         return true unless options[:required]
         return false if value.nil?
         return false if value == ''
-        return false if value.is_a?(Enumerable) && value.size.zero?
+        return false if value.is_a?(Enumerable) && value.empty?
 
         true
       end

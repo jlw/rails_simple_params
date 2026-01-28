@@ -15,14 +15,19 @@ module RailsSimpleParams
     end
 
     def should_set_default?
-      value.nil? && check_param_presence?(options[:default])
+      value.blank? && check_param_presence?(options[:default])
     end
 
     def set_default
+      return unless should_set_default?
+
       self.value = options[:default].respond_to?(:call) ? options[:default].call : options[:default]
     end
 
     def transform
+      return if value.nil?
+      return unless options[:transform]
+
       self.value = options[:transform].to_proc.call(value)
     end
 

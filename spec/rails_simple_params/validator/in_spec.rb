@@ -56,7 +56,7 @@ describe RailsSimpleParams::Validator::In do
   end
 
   context 'with a proc' do
-    let(:options) { { in: -> { (Time.now.year - 5..Time.now.year + 5) } } }
+    let(:options) { { in: -> { ((Time.now.year - 5)..(Time.now.year + 5)) } } }
     let(:type) { Integer }
     let(:value) { Time.now.year }
 

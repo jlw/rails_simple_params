@@ -35,6 +35,8 @@ describe RailsSimpleParams::Parameter do
   end
 
   describe '#set_default' do
+    let(:value) { nil }
+
     context 'default options respond to .call' do
       let(:default_option) do
         double.tap do |dbl|

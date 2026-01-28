@@ -9,39 +9,23 @@ module RailsSimpleParams
       @context = context
     end
 
-    def param!(name, type, options = {}, &) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+    def param!(name, type, options = {}, &) # rubocop:disable Metrics/MethodLength
       name = name.to_s unless name.is_a?(Integer)
-      return unless params.include?(name) || check_param_presence?(options[:default]) || options[:required]
+      return unless evaluate?(name, options)
 
       parameter_name = @context ? "#{@context}[#{name}]" : name
-      check_config(parameter_name, type, options)
-      coerced_value = coerce(parameter_name, params[name], type, options)
-
+      ConfigCheck.new(parameter_name, type, options)
       parameter = RailsSimpleParams::Parameter.new(
         name: parameter_name,
-        value: coerced_value,
+        value: coerce(parameter_name, params[name], type, options),
         type: type,
         options: options,
         &
       )
 
-      parameter.set_default if parameter.should_set_default?
-
-      # validate presence
-      if params[name].nil? && options[:required]
-        raise MissingParameter.new(
-          "#{parameter_name} is required",
-          param: parameter_name,
-          options: options
-        )
-      end
-
+      parameter.set_default
       recurse_on_parameter(parameter, &) if block_given?
-
-      # apply transformation
-      parameter.transform if options[:transform]
-
-      # validate
+      parameter.transform
       validate!(parameter)
 
       # set params value
@@ -63,12 +47,8 @@ module RailsSimpleParams
       raise InvalidType.new("'#{param}' is not a valid #{type}", param: param_name)
     end
 
-    def check_config(param_name, type, options = {})
-      ConfigCheck.new(param_name, type, options)
-    end
-
-    def check_param_presence?(param)
-      !param.nil?
+    def evaluate?(name, options)
+      params.include?(name) || !options[:default].nil? || options[:required]
     end
 
     def recurse(element, context, index = nil)
@@ -93,8 +73,8 @@ module RailsSimpleParams
       end
     end
 
-    def validate!(param)
-      param.validate
+    def validate!(parameter)
+      parameter.validate
     end
   end
 end
