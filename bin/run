@@ -4,7 +4,7 @@ versions=('3.2.8' '3.3.8' '3.4.2')
 
 switcher=`which asdf`
 if [[ $switcher = *[!\ ]* ]]; then
-  verb="local ruby"
+  verb="current ruby"
   install_verb="install ruby"
 else
   switcher=`which rbenv`
