@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative 'dummy/app/controllers/fake_controller'
 
 describe FakeController, type: :controller do
   def prepare_params(params)
@@ -157,12 +158,12 @@ describe FakeController, type: :controller do
     before { request.headers['Content-Type'] = 'application/json' }
 
     it 'responds with a 200 when array is not provided' do
-      expect { post :array, **prepare_params({}) }
+      expect { post :ary, **prepare_params({}) }
         .not_to raise_error
     end
 
     it 'responds with a 200 when when nil is provided' do
-      expect { post :array, **prepare_params({ my_array: nil }) }
+      expect { post :ary, **prepare_params({ my_array: nil }) }
         .not_to raise_error
     end
   end

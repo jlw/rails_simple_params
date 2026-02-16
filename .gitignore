@@ -4,6 +4,8 @@
 coverage/
 Gemfile.lock*
 gemfiles/
+log/
 pkg/
 README.html
+spec/dummy/log/
 tmp/

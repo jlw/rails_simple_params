@@ -1,8 +1,4 @@
-require 'fixtures/fake_rails_application'
-
 class FakeController < ActionController::Base
-  include Rails.application.routes.url_helpers
-
   def show
     render plain: 'Foo'
   end
@@ -60,7 +56,7 @@ class FakeController < ActionController::Base
     render plain: :nested_array_required_element
   end
 
-  def array
+  def ary
     param! :my_array, Array
 
     render plain: :array
