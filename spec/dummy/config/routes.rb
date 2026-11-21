@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   post '/fake/ary' => 'fake#ary'
   post '/fake/array_optional_element' => 'fake#array_optional_element'
   post '/fake/array_required_element' => 'fake#array_required_element'
+  post '/fake/upload' => 'fake#upload'
 end

@@ -36,6 +36,8 @@ module RailsSimpleParams
 
     def coerce(param_name, param, type, options = {})
       return nil if param.nil?
+
+      reject_file_upload!(param_name, param, options)
       return param if begin
         param.is_a?(type)
       rescue StandardError
@@ -49,6 +51,12 @@ module RailsSimpleParams
 
     def evaluate?(name, options)
       params.include?(name) || !options[:default].nil? || options[:required]
+    end
+
+    def reject_file_upload!(param_name, param, options)
+      return unless param.respond_to?(:original_filename) && param.respond_to?(:tempfile)
+
+      raise FileUpload.new("#{param_name} does not allow file uploads", param: param_name, options: options)
     end
 
     def recurse(element, context, index = nil)

@@ -18,6 +18,7 @@ module RailsSimpleParams
   end
 
   class EmptyParameter < InvalidParameter; end
+  class FileUpload < InvalidParameter; end
   class InvalidFormat < InvalidParameter; end
   class InvalidIdentity < InvalidParameter; end
   class InvalidOption < InvalidParameter; end

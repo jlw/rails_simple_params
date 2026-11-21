@@ -195,4 +195,36 @@ describe FakeController, type: :controller do
         .not_to raise_error
     end
   end
+
+  describe 'file uploads' do
+    let(:file) { Rack::Test::UploadedFile.new(__FILE__, 'text/plain') }
+
+    it 'raises FileUpload for a top-level param' do
+      expect { post :upload, **prepare_params(document: file) }.to raise_error(
+        RailsSimpleParams::FileUpload, 'document does not allow file uploads'
+      ) { |error| expect(error.param).to eq 'document' }
+    end
+
+    it 'raises FileUpload for a nested hash param' do
+      expect { post :upload, **prepare_params(book: { cover: file }) }.to raise_error(
+        RailsSimpleParams::FileUpload, 'book[cover] does not allow file uploads'
+      )
+    end
+
+    it 'raises FileUpload for an array element' do
+      expect { post :upload, **prepare_params(attachments: ['ok', file]) }.to raise_error(
+        RailsSimpleParams::FileUpload, 'attachments[1] does not allow file uploads'
+      )
+    end
+
+    it 'is rescuable as InvalidParameter' do
+      expect { post :upload, **prepare_params(document: file) }
+        .to raise_error(RailsSimpleParams::InvalidParameter)
+    end
+
+    it 'allows ordinary values' do
+      expect { post :upload, **prepare_params(document: 'text', attachments: %w[a b]) }
+        .not_to raise_error
+    end
+  end
 end

@@ -77,4 +77,16 @@ class FakeController < ActionController::Base
 
     render plain: :array
   end
+
+  def upload
+    param! :document, String
+    param! :book, Hash do |b|
+      b.param! :cover, Hash
+    end
+    param! :attachments, Array do |a, idx|
+      a.param! idx, String
+    end
+
+    render plain: :upload
+  end
 end

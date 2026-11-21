@@ -486,6 +486,28 @@ describe RailsSimpleParams do
       end
     end
 
+    describe 'file uploads' do
+      let(:upload) { ActionDispatch::Http::UploadedFile.new(tempfile: Tempfile.new, filename: 'a.txt') }
+
+      [String, Integer, Float, BigDecimal, :boolean, Array, Hash, Date, Time, DateTime].each do |type|
+        it "raises FileUpload when a #{type} param receives an uploaded file" do
+          allow(controller).to receive(:params).and_return({ 'foo' => upload })
+          expect { controller.param! :foo, type }.to(
+            raise_error(RailsSimpleParams::FileUpload, 'foo does not allow file uploads') do |error|
+              expect(error.param).to eq 'foo'
+            end
+          )
+        end
+      end
+
+      it 'uses the custom :message option' do
+        allow(controller).to receive(:params).and_return({ 'foo' => upload })
+        expect { controller.param! :foo, String, message: 'no files' }.to(
+          raise_error(RailsSimpleParams::FileUpload, 'no files')
+        )
+      end
+    end
+
     describe 'coerce' do
       describe 'String' do
         it 'will convert to String' do
