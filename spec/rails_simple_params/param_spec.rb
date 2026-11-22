@@ -770,6 +770,26 @@ describe RailsSimpleParams do
           controller.param! :foo, BigDecimal
           expect(controller.params['foo']).to eq 100_000.0
         end
+
+        it 'raises InvalidType on a non-numeric string' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'abc' })
+          expect { controller.param! :foo, BigDecimal }.to(
+            raise_error(RailsSimpleParams::InvalidType, "'abc' is not a valid BigDecimal") do |error|
+              expect(error.param).to eq 'foo'
+            end
+          )
+        end
+
+        it 'raises InvalidType on a string with trailing garbage' do
+          allow(controller).to receive(:params).and_return({ 'foo' => '12abc' })
+          expect { controller.param! :foo, BigDecimal }.to raise_error(RailsSimpleParams::InvalidType)
+        end
+
+        it 'keeps full precision when the precision option exceeds what a Float can hold' do
+          allow(controller).to receive(:params).and_return({ 'foo' => '12345678901234567.89' })
+          controller.param! :foo, BigDecimal, precision: 20
+          expect(controller.params['foo']).to eq BigDecimal('12345678901234567.89')
+        end
       end
 
       describe 'booleans' do

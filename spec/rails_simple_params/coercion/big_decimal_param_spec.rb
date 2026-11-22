@@ -47,6 +47,50 @@ describe RailsSimpleParams::Coercion::BigDecimalParam do
 
         it_behaves_like 'returns nil'
       end
+
+      context 'param is a currency String with a thousands separator' do
+        let(:param) { '$1,234.50' }
+
+        it 'returns the param as BigDecimal' do
+          expect(subject.coerce).to eq BigDecimal('1234.50')
+        end
+      end
+
+      context 'given a precision option larger than a Float can hold' do
+        let(:param)   { '12345678901234567.89' }
+        let(:options) { { precision: 20 } }
+
+        it 'returns the exact value' do
+          expect(subject.coerce).to eq BigDecimal('12345678901234567.89')
+        end
+      end
+
+      ['abc', '12abc', ' ', 'Infinity', '-Infinity', 'NaN'].each do |invalid|
+        context "param is #{invalid.inspect}" do
+          let(:param) { invalid }
+
+          it 'raises ArgumentError' do
+            expect { subject.coerce }.to raise_error(ArgumentError)
+          end
+        end
+      end
+    end
+
+    context 'param is an Integer' do
+      let(:param) { 42 }
+
+      it 'returns the param as BigDecimal' do
+        expect(subject.coerce).to eq BigDecimal('42')
+      end
+    end
+
+    context 'param is a Float with a precision option larger than a Float can hold' do
+      let(:param)   { 0.1 }
+      let(:options) { { precision: 20 } }
+
+      it 'returns the Float as written, without binary noise' do
+        expect(subject.coerce).to eq BigDecimal('0.1')
+      end
     end
   end
 end
