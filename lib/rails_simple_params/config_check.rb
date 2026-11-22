@@ -18,16 +18,15 @@ module RailsSimpleParams
     }.freeze
 
     def initialize(param, type, options)
-      klass_for(type).new(param: param, options: options, type: type)
+      klass_for(param, type).new(param: param, options: options, type: type)
     end
 
     private
 
-    def klass_for(type)
-      klass = PARAM_TYPE_MAPPING[type]
-      return klass if klass
-
-      raise TypeError
+    def klass_for(param, type)
+      PARAM_TYPE_MAPPING.fetch(type) do
+        raise InvalidConfiguration.new("#{type.inspect} is not a supported type for #{param}", param:)
+      end
     end
   end
 end

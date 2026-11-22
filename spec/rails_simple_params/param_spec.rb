@@ -15,6 +15,33 @@ describe RailsSimpleParams do
     end
 
     describe 'options validation' do
+      describe 'type' do
+        it 'raises InvalidConfiguration on an unsupported type' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'bar' })
+          expect { controller.param! :foo, Symbol }.to(
+            raise_error(RailsSimpleParams::InvalidConfiguration, 'Symbol is not a supported type for foo') do |error|
+              expect(error.param).to eq 'foo'
+            end
+          )
+        end
+
+        it 'raises InvalidConfiguration on an unsupported type even when the param is absent but required' do
+          allow(controller).to receive(:params).and_return({})
+          expect { controller.param! :foo, :string, required: true }.to(
+            raise_error(RailsSimpleParams::InvalidConfiguration, ':string is not a supported type for foo')
+          )
+        end
+
+        it 'includes the full nested name for an unsupported type in a block' do
+          allow(controller).to receive(:params).and_return({ 'book' => { 'title' => 'x' } })
+          expect { controller.param!(:book, Hash) { |b| b.param! :title, Symbol } }.to(
+            raise_error(RailsSimpleParams::InvalidConfiguration, 'Symbol is not a supported type for book[title]') do |error|
+              expect(error.param).to eq 'book[title]'
+            end
+          )
+        end
+      end
+
       describe ':format' do
         it 'raises InvalidConfiguration on Integer' do
           allow(controller).to receive(:params).and_return({ 'foo' => 'bar' })
