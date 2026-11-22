@@ -85,5 +85,21 @@ describe RailsSimpleParams::Coercion::BooleanParam do
         expect { subject.coerce }.to raise_error ArgumentError
       end
     end
+
+    context "given 'TRUE' (case-insensitive)" do
+      let(:param) { 'TRUE' }
+
+      it_behaves_like 'coerces to true'
+    end
+
+    %W[1\nfoo foo\n1 true\n 0\nfoo foo\nfalse no\n].each do |multiline|
+      context "given a multiline String (#{multiline.inspect})" do
+        let(:param) { multiline }
+
+        it 'raises ArgumentError' do
+          expect { subject.coerce }.to raise_error ArgumentError
+        end
+      end
+    end
   end
 end

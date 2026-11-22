@@ -3,8 +3,8 @@
 module RailsSimpleParams
   class Coercion
     class BooleanParam < Base
-      FALSEY = /^(false|f|no|n|0)$/i
-      TRUTHY = /^(true|t|yes|y|1)$/i
+      FALSEY = /\A(false|f|no|n|0)\z/i
+      TRUTHY = /\A(true|t|yes|y|1)\z/i
 
       def coerce
         return false if FALSEY === param.to_s
