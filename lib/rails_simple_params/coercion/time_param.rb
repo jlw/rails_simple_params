@@ -14,7 +14,7 @@ module RailsSimpleParams
       private
 
       def argument_validation
-        raise InvalidConfiguration unless type.respond_to?(:parse)
+        raise ArgumentError unless type.respond_to?(:parse)
       end
     end
   end

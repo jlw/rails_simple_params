@@ -13,7 +13,7 @@ module RailsSimpleParams
       private
 
       def argument_validation
-        raise InvalidConfiguration unless type == Hash
+        raise ArgumentError unless type == Hash
       end
     end
   end

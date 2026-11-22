@@ -4,9 +4,6 @@ module RailsSimpleParams
   class Parameter
     attr_accessor :name, :value, :options, :type
 
-    TIME_TYPES = [Date, DateTime, Time].freeze
-    STRING_OR_TIME_TYPES = ([String] + TIME_TYPES).freeze
-
     def initialize(name:, value:, options: {}, type: nil)
       @name = name
       @value = value
@@ -15,7 +12,7 @@ module RailsSimpleParams
     end
 
     def should_set_default?
-      value.blank? && check_param_presence?(options[:default])
+      value.blank? && !options[:default].nil?
     end
 
     def set_default
@@ -33,12 +30,6 @@ module RailsSimpleParams
 
     def validate
       Validator.new(self).validate!
-    end
-
-    private
-
-    def check_param_presence?(param)
-      !param.nil?
     end
   end
 end

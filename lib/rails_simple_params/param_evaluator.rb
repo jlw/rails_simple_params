@@ -26,7 +26,7 @@ module RailsSimpleParams
       parameter.set_default
       recurse_on_parameter(parameter, &) if block_given?
       parameter.transform
-      validate!(parameter)
+      parameter.validate
 
       # set params value
       params[name] = parameter.value
@@ -82,10 +82,6 @@ module RailsSimpleParams
       else
         recurse(parameter.value, parameter.name, &)
       end
-    end
-
-    def validate!(parameter)
-      parameter.validate
     end
   end
 end

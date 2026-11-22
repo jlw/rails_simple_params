@@ -17,16 +17,13 @@ module RailsSimpleParams
       boolean: BooleanParam
     }.freeze
 
-    attr_reader :coercion, :param
+    attr_reader :coercion
 
     def initialize(param, type, options)
-      @param = param
       @coercion = klass_for(type).new(param: param, options: options, type: type)
     end
 
     def coerce
-      return nil if param.nil?
-
       coercion.coerce
     end
 
