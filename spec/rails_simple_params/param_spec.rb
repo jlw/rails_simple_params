@@ -1123,6 +1123,45 @@ describe RailsSimpleParams do
             end
           )
         end
+
+        it 'succeeds with an endless range' do
+          Timeout.timeout(1) { controller.param! :price, Integer, in: (1..) }
+          expect(controller.params['price']).to eq 50
+        end
+
+        it 'succeeds with a beginless range' do
+          Timeout.timeout(1) { controller.param! :price, Integer, in: (..100) }
+          expect(controller.params['price']).to eq 50
+        end
+
+        it 'raises outside an endless range' do
+          expect { Timeout.timeout(1) { controller.param! :price, Integer, in: (51..) } }.to(
+            raise_error(RailsSimpleParams::OutOfRange, 'price must be within 51..')
+          )
+        end
+
+        it 'does not enumerate a large range' do
+          Timeout.timeout(1) { controller.param! :price, Integer, in: 1..1_000_000_000 }
+          expect(controller.params['price']).to eq 50
+        end
+
+        it 'succeeds with a Float range' do
+          controller.param! :price, Float, in: 1.0..100.0
+          expect(controller.params['price']).to eq 50.0
+        end
+
+        it 'raises outside a Float range' do
+          expect { controller.param! :price, Float, in: 50.5..100.0 }.to(
+            raise_error(RailsSimpleParams::OutOfRange, 'price must be within 50.5..100.0')
+          )
+        end
+
+        it 'raises InvalidConfiguration on an Integer range with non-Integer endpoints' do
+          expect { controller.param! :price, Integer, in: 1.5..100 }.to(
+            raise_error(RailsSimpleParams::InvalidConfiguration,
+                        'Integer param (price) does not allow non-Integer :in options')
+          )
+        end
       end
 
       describe 'in paramater (with a set)' do

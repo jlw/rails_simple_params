@@ -18,7 +18,7 @@ module RailsSimpleParams
         return unless (allowed = options[:in])
 
         allowed = allowed.call if allowed.respond_to?(:call)
-        allowed = [allowed.begin, allowed.end] if allowed.is_a?(Range) && type.is_a?(Numeric)
+        allowed = [allowed.begin, allowed.end].compact if allowed.is_a?(Range)
         allowed
       end
 
