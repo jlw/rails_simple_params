@@ -4,7 +4,7 @@ module RailsSimpleParams
   class Validator
     class Blank < Validator
       def valid_value?
-        return false if parameter.options[:blank]
+        return true if options[:blank] # blank: true explicitly allows blank values
 
         case value
         when String

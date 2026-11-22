@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe RailsSimpleParams::Validator::Required do
+describe RailsSimpleParams::Validator::Blank do
   let(:name)          { 'foo' }
   let(:options)       { { blank: false } }
   let(:type)          { String }
@@ -17,6 +17,28 @@ describe RailsSimpleParams::Validator::Required do
   subject { described_class.new(parameter) }
 
   describe '#validate!' do
+    context 'blank: true' do
+      let(:options) { { blank: true } }
+
+      context 'with a non-blank value' do
+        let(:value) { 'bar' }
+
+        it_behaves_like 'does not raise error'
+      end
+
+      context 'with an empty String' do
+        let(:value) { '' }
+
+        it_behaves_like 'does not raise error'
+      end
+
+      context 'with nil' do
+        let(:value) { nil }
+
+        it_behaves_like 'does not raise error'
+      end
+    end
+
     context 'String' do
       context 'is not empty' do
         let(:value) { 'bar' }

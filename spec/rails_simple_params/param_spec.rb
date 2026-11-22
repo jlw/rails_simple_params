@@ -1089,6 +1089,22 @@ describe RailsSimpleParams do
             end
           )
         end
+
+        it 'succeeds with a non-blank String when blank: true' do
+          allow(controller).to receive(:params).and_return({ 'price' => 'foo' })
+          expect { controller.param! :price, String, blank: true }.to_not raise_error
+          expect(controller.params['price']).to eq 'foo'
+        end
+
+        it 'succeeds with a blank String when blank: true' do
+          allow(controller).to receive(:params).and_return({ 'price' => '' })
+          expect { controller.param! :price, String, blank: true }.to_not raise_error
+        end
+
+        it 'succeeds with an empty Array when blank: true' do
+          allow(controller).to receive(:params).and_return({ 'array' => [] })
+          expect { controller.param! :array, Array, blank: true }.to_not raise_error
+        end
       end
 
       describe 'format parameter' do
