@@ -57,9 +57,9 @@ module RailsSimpleParams
         validate_length :max_length
         validate_length :min_length
         return unless options.key?(:min_length) && options.key?(:max_length)
-        return if options[:min_length] < options[:max_length]
+        return if options[:min_length] <= options[:max_length]
 
-        raise_error ":max_length on #{param} must be larger than :min_length"
+        raise_error ":max_length on #{param} cannot be smaller than :min_length"
       end
 
       def validate_limit(key)
@@ -73,9 +73,9 @@ module RailsSimpleParams
         validate_limit :max
         validate_limit :min
         return unless options.key?(:min) && options.key?(:max)
-        return if options[:min] < options[:max]
+        return if options[:min] <= options[:max]
 
-        raise_error ":max on #{param} must be larger than :min"
+        raise_error ":max on #{param} cannot be smaller than :min"
       end
     end
   end

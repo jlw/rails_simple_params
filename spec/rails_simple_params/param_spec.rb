@@ -193,7 +193,20 @@ describe RailsSimpleParams do
         it 'raises InvalidConfiguration when smaller than :min' do
           allow(controller).to receive(:params).and_return({ 'foo' => 'bar' })
           expect { controller.param! :foo, Integer, max: 2, min: 4 }.to(
-            raise_error(RailsSimpleParams::InvalidConfiguration, ':max on foo must be larger than :min')
+            raise_error(RailsSimpleParams::InvalidConfiguration, ':max on foo cannot be smaller than :min')
+          )
+        end
+
+        it 'allows :max equal to :min' do
+          allow(controller).to receive(:params).and_return({ 'foo' => '4' })
+          expect { controller.param! :foo, Integer, max: 4, min: 4 }.to_not raise_error
+          expect(controller.params['foo']).to eq 4
+        end
+
+        it 'still validates the value when :max equals :min' do
+          allow(controller).to receive(:params).and_return({ 'foo' => '5' })
+          expect { controller.param! :foo, Integer, max: 4, min: 4 }.to(
+            raise_error(RailsSimpleParams::TooLarge, 'foo cannot be greater than 4')
           )
         end
 
@@ -251,7 +264,20 @@ describe RailsSimpleParams do
         it 'raises InvalidConfiguration when smaller than :min_length' do
           allow(controller).to receive(:params).and_return({ 'foo' => 'bar' })
           expect { controller.param! :foo, String, max_length: 2, min_length: 4 }.to(
-            raise_error(RailsSimpleParams::InvalidConfiguration, ':max_length on foo must be larger than :min_length')
+            raise_error(RailsSimpleParams::InvalidConfiguration, ':max_length on foo cannot be smaller than :min_length')
+          )
+        end
+
+        it 'allows :max_length equal to :min_length' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'US' })
+          expect { controller.param! :foo, String, max_length: 2, min_length: 2 }.to_not raise_error
+          expect(controller.params['foo']).to eq 'US'
+        end
+
+        it 'still validates the value when :max_length equals :min_length' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'USA' })
+          expect { controller.param! :foo, String, max_length: 2, min_length: 2 }.to(
+            raise_error(RailsSimpleParams::TooLong, 'foo cannot be longer than 2 characters')
           )
         end
 
