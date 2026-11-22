@@ -8,7 +8,7 @@ module RailsSimpleParams
 
         case value
         when String
-          (/\S/ === value) # rubocop:disable Style/CaseEquality
+          (/\S/ === value)
         when Array, Hash, ActionController::Parameters
           !value.empty?
         else
