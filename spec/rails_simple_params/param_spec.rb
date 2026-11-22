@@ -1122,6 +1122,20 @@ describe RailsSimpleParams do
           )
         end
 
+        it 'raises on an empty nested hash' do
+          allow(controller).to receive(:params).and_return({ 'filter' => ActionController::Parameters.new })
+          expect { controller.param! :filter, Hash, required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'filter is required') do |error|
+              expect(error.param).to eq 'filter'
+            end
+          )
+        end
+
+        it 'succeeds on a non-empty nested hash' do
+          allow(controller).to receive(:params).and_return({ 'filter' => ActionController::Parameters.new({ 'q' => 'x' }) })
+          expect { controller.param! :filter, Hash, required: true }.to_not raise_error
+        end
+
         it 'raises custom message' do
           allow(controller).to receive(:params).and_return({})
           expect { controller.param! :price, Integer, required: true, message: 'No price specified' }.to(
