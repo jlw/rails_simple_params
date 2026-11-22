@@ -4,30 +4,25 @@ module RailsSimpleParams
   class Validator
     class Format < Validator
       TIME_TYPES = [Date, DateTime, Time].freeze
-      STRING_OR_TIME_TYPES = ([String] + TIME_TYPES).freeze
 
+      # ConfigCheck only allows :format on String and time types, so after coercion the value is a
+      # String, a Date/DateTime/Time (already parsed with the format), or nil (absent or null input).
       def valid_value?
-        matches_time_types? || string_in_format?
+        value.nil? || matches_time_types? || string_in_format?
       end
 
       private
 
       def error_message
-        return "#{name} must be a string if using the format validation" unless matches_string_or_time_types?
-
-        "#{name} must match format #{options[:format]}" unless string_in_format?
+        "#{name} must match format #{options[:format]}"
       end
 
       def exception_class
-        matches_string_or_time_types? ? InvalidFormat : InvalidConfiguration
+        InvalidFormat
       end
 
       def matches_time_types?
         TIME_TYPES.any? { |cls| value.is_a? cls }
-      end
-
-      def matches_string_or_time_types?
-        STRING_OR_TIME_TYPES.any? { |cls| value.is_a? cls }
       end
 
       def string_in_format?

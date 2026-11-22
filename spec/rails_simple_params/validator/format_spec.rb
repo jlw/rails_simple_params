@@ -29,6 +29,12 @@ describe RailsSimpleParams::Validator::Format do
       it_behaves_like 'does not raise error'
     end
 
+    context 'value given is nil (i.e. JSON null)' do
+      let(:value) { nil }
+
+      it_behaves_like 'does not raise error'
+    end
+
     context 'value given is invalid' do
       let(:value)         { '50' }
       let(:error_message) { "foo must match format #{format_validation}" }

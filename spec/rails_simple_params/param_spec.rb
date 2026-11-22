@@ -1106,6 +1106,26 @@ describe RailsSimpleParams do
             end
           )
         end
+
+        it 'succeeds when the value is nil' do
+          allow(controller).to receive(:params).and_return({ 'price' => nil })
+          expect { controller.param! :price, String, format: /[0-9]+\$/ }.to_not raise_error
+          expect(controller.params['price']).to be_nil
+        end
+
+        it 'raises MissingParameter when required and absent, even if :format comes first' do
+          allow(controller).to receive(:params).and_return({})
+          expect { controller.param! :price, String, format: /[0-9]+\$/, required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'price is required')
+          )
+        end
+
+        it 'raises MissingParameter when required and nil, even if :format comes first' do
+          allow(controller).to receive(:params).and_return({ 'price' => nil })
+          expect { controller.param! :price, String, format: /[0-9]+\$/, required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'price is required')
+          )
+        end
       end
 
       describe 'in parameter (with a range)' do
