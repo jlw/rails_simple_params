@@ -1368,6 +1368,70 @@ describe RailsSimpleParams do
             end
           )
         end
+
+        it 'is not called with a nil value' do
+          allow(controller).to receive(:params).and_return({ 'number' => nil })
+          expect { controller.param! :number, Integer, custom: custom_validation }.to_not raise_error
+        end
+      end
+
+      describe 'validation order' do
+        let(:odd_check) do
+          lambda { |v|
+            raise RailsSimpleParams::InvalidParameter, 'Number is not even' if v.odd?
+          }
+        end
+
+        it 'raises MissingParameter when :is comes before :required and the param is absent' do
+          allow(controller).to receive(:params).and_return({})
+          expect { controller.param! :foo, String, is: 'bar', required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'foo is required')
+          )
+        end
+
+        it 'raises MissingParameter when :custom comes before :required and the param is nil' do
+          allow(controller).to receive(:params).and_return({ 'number' => nil })
+          expect { controller.param! :number, Integer, custom: odd_check, required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'number is required')
+          )
+        end
+
+        it 'raises EmptyParameter when :is comes before blank: false and the param is nil' do
+          allow(controller).to receive(:params).and_return({ 'foo' => nil })
+          expect { controller.param! :foo, String, is: 'bar', blank: false }.to(
+            raise_error(RailsSimpleParams::EmptyParameter, 'foo cannot be blank')
+          )
+        end
+
+        it 'checks :required before blank: false regardless of option order' do
+          allow(controller).to receive(:params).and_return({})
+          expect { controller.param! :foo, String, blank: false, required: true }.to(
+            raise_error(RailsSimpleParams::MissingParameter, 'foo is required')
+          )
+        end
+
+        it 'skips value validators for a nil value that is not required' do
+          allow(controller).to receive(:params).and_return({ 'foo' => nil })
+          expect { controller.param! :foo, String, is: 'bar' }.to_not raise_error
+          expect(controller.params['foo']).to be_nil
+        end
+
+        it 'still runs value validators for a present value when presence options come last' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'baz' })
+          expect { controller.param! :foo, String, is: 'bar', required: true }.to(
+            raise_error(RailsSimpleParams::InvalidIdentity, 'foo must be bar')
+          )
+        end
+
+        it 'runs value validators in the order given' do
+          allow(controller).to receive(:params).and_return({ 'foo' => 'toolong' })
+          expect { controller.param! :foo, String, max_length: 3, in: %w[a b] }.to(
+            raise_error(RailsSimpleParams::TooLong)
+          )
+          expect { controller.param! :foo, String, in: %w[a b], max_length: 3 }.to(
+            raise_error(RailsSimpleParams::InvalidOption)
+          )
+        end
       end
     end
   end

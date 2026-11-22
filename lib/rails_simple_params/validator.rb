@@ -10,8 +10,8 @@ module RailsSimpleParams
 
     def_delegators :parameter, :name, :options, :value
 
-    VALIDATABLE_OPTIONS = %i[
-      blank
+    PRESENCE_OPTIONS = %i[required blank].freeze # these run first
+    VALUE_OPTIONS = %i[
       custom
       format
       in
@@ -20,7 +20,6 @@ module RailsSimpleParams
       max
       min_length
       min
-      required
     ].freeze
 
     def initialize(parameter)
@@ -28,11 +27,13 @@ module RailsSimpleParams
     end
 
     def validate!
-      options.each_key do |key|
-        next unless VALIDATABLE_OPTIONS.include? key
+      PRESENCE_OPTIONS.each { |key| run_validator(key) if options.key?(key) }
+      return if value.nil?
 
-        class_name = camelize(key)
-        Validator.const_get(class_name).new(parameter).valid!
+      options.each_key do |key|
+        next unless VALUE_OPTIONS.include?(key)
+
+        run_validator(key)
       end
     end
 
@@ -47,6 +48,10 @@ module RailsSimpleParams
     end
 
     private
+
+    def run_validator(key)
+      Validator.const_get(camelize(key)).new(parameter).valid!
+    end
 
     def camelize(term)
       string = term.to_s
