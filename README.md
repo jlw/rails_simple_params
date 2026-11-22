@@ -72,7 +72,7 @@ exception classes:
     param! :categories, Array
     param! :sort,       String, default: 'title'
     param! :order,      String, in: %w(asc desc), transform: :downcase, default: 'asc'
-    param! :price,      String, format: /[<\=>]\s*\$\d+/
+    param! :price,      String, format: /\A[<\=>]\s*\$\d+\z/
     param! :results,    Integer, in: (10..100)
 
     # Access the parameters using the params object (e.g. `params[:q]`) as you usually do...
@@ -113,6 +113,8 @@ this kind of exception.
 - `min` / `max`
 - `min_length` / `max_length`
 - `required`
+
+Format regular expressions should always use `\A` and `\z` anchors.
 
 File uploads are always rejected: if a declared parameter (including one nested
 in a `Hash` or `Array` block) receives an uploaded file, `RailsSimpleParams::FileUpload`
