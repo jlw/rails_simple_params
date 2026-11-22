@@ -951,6 +951,33 @@ describe RailsSimpleParams do
         expect(controller.params['array'][1]).to be_a Integer
       end
 
+      it 'ignores the block return value for primitive elements' do
+        allow(controller).to receive(:params).and_return({ 'array' => %w[1 2] })
+        controller.param! :array, Array do |a, i|
+          a.param! i, Integer, required: true
+          :unrelated_return_value
+        end
+        expect(controller.params['array']).to eq [1, 2]
+      end
+
+      it 'keeps primitive elements unchanged when the block does not call param!' do
+        allow(controller).to receive(:params).and_return({ 'array' => %w[1 2] })
+        controller.param!(:array, Array) { |_a, _i| nil }
+        expect(controller.params['array']).to eq %w[1 2]
+      end
+
+      it 'keeps primitive elements of an array of arrays when the inner block returns something else' do
+        allow(controller).to receive(:params).and_return({ 'array' => [%w[1 2], %w[3 4]] })
+        controller.param! :array, Array do |a, i|
+          a.param! i, Array do |b, e|
+            b.param! e, Integer, required: true
+            nil
+          end
+          nil
+        end
+        expect(controller.params['array']).to eq [[1, 2], [3, 4]]
+      end
+
       it 'validates array of hashes' do
         params = { 'array' => [{ 'object' => { 'num' => '1', 'float' => '1.5' } },
                                { 'object' => { 'num' => '2', 'float' => '2.3' } }] }

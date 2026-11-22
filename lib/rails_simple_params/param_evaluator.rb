@@ -73,7 +73,10 @@ module RailsSimpleParams
           if element.is_a?(Hash) || element.is_a?(ActionController::Parameters)
             recurse(element, "#{parameter.name}[#{i}]", &)
           else
-            parameter.value[i] = recurse({ i => element }, parameter.name, i, &) # supply index as key unless value is hash
+            # do not rely on the block's return value
+            wrapper = { i => element }
+            recurse(wrapper, parameter.name, i, &)
+            parameter.value[i] = wrapper[i]
           end
         end
       else
