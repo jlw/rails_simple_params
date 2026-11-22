@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version  = RailsSimpleParams::VERSION
   spec.authors  = ['Jeremy Weathers']
   spec.email    = ['jeremy@codekindly.com']
-  spec.homepage = 'http://github.com/jlw/rails-simple-param'
+  spec.homepage = 'https://github.com/jlw/rails_simple_params'
   spec.license  = 'MIT'
   spec.metadata = { 'rubygems_mfa_required' => 'true' }
 
